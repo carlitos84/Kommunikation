@@ -14,8 +14,7 @@ public class QuoteServerThread extends Thread {
     protected boolean clientInProgress = false;
     protected boolean gameSessionOn = false;
     protected boolean handshakeDone = false;
-    protected int correctNumber;
-    protected int guessNumber;
+    protected GuessGame game;
 
     public QuoteServerThread() throws IOException {
         this("QuoteServerThread");
@@ -24,6 +23,7 @@ public class QuoteServerThread extends Thread {
     public QuoteServerThread(String name) throws IOException {
         super(name);
         socket = new DatagramSocket(4445);
+        game = new GuessGame();
     }
 
     public void run() {
@@ -32,10 +32,10 @@ public class QuoteServerThread extends Thread {
             try {
                 byte[] writebuf = new byte[256];
                 byte[] readbuf = new byte[256];
+
                 // receive request
                 DatagramPacket packet = new DatagramPacket(readbuf, readbuf.length);
                 socket.receive(packet);
-
                 if (!clientInProgress) {
                     activeClientIP = packet.getAddress();
                     activeClientPort = packet.getPort();
@@ -45,60 +45,37 @@ public class QuoteServerThread extends Thread {
                 System.out.println("message recieve from a client: " + message);
 
                 //Receive end
-
-
-                if (!(packet.getAddress().equals(activeClientIP) && packet.getPort() == activeClientPort))
+                if (!(packet.getAddress().equals(activeClientIP) && packet.getPort() == activeClientPort)) //
                 {
                     writebuf = "BUSY".getBytes();
                 }
                 else if(message.length() >= 5 &&(message.substring(0,5)).equals("GUESS") && handshakeDone) // checks if clients message is GUESS
                 {
-                    if(message.length() == 5 || (message.length() == 6 && message.charAt(5) == ' '))
+                    if(message.length() == 5 || (message.length() == 6 && message.charAt(5) == ' ')) //ex. "GUESS "
                     {
                         writebuf = "No argument! try again.".getBytes();
-                        reset();
                     }
                     else if( message.charAt(5) == ' ')
                     {
-                        try{
-                            guessNumber = Integer.parseInt(message.substring(6,message.length()));
-                            if(correctNumber == guessNumber)
-                            {
-                                writebuf = "CORRECT! New game started, guess the number!".getBytes();
-                                System.out.println("Client guess is correct!");
-                                Random rand = new Random();
-                                correctNumber = rand.nextInt(100) + 1;
-                                System.out.println("Correct number has generated: " + correctNumber);
-                            }
-                            else if(correctNumber < guessNumber)
-                            {
-                                writebuf = "HI".getBytes();
-                            }
-                            else if(correctNumber > guessNumber)
-                            {
-                                writebuf = "LO".getBytes();
-                            }
-                            socket.setSoTimeout(15000);
-                        }
-                        catch (NumberFormatException e)
+                        String guessArgument = message.substring(6,message.length());
+                        if(validateNumber(guessArgument))
                         {
-                            writebuf = "Not a number, try again!".getBytes();
+                            writebuf = game.makeGuess(Integer.parseInt(guessArgument)).getBytes();
                         }
+                        else
+                        {
+                            writebuf = "Not a number! Try again.".getBytes();
+                        }
+                        socket.setSoTimeout(15000);
                     }
-                    else
+                    else //ex. GUESSa12
                     {
                         writebuf = "Wrong input. Connection dropped.".getBytes();
                         reset();
                     }
-
-                    System.out.println("Correct number: " + correctNumber);
                 }
                 else if(message.equals("START") && handshakeDone)
                 {
-                    Random rand = new Random();
-                    correctNumber = rand.nextInt(100) + 1;
-                    System.out.println("Correct number has generated: " + correctNumber);
-                    //gameSessionOn = true;
                     writebuf = "READY".getBytes();
                 }
                 else if (message.equals("HELLO")) {
@@ -113,11 +90,12 @@ public class QuoteServerThread extends Thread {
                 }
 
                 // send the response to the client who reached to server
-
                 packet = new DatagramPacket(writebuf, writebuf.length, packet.getAddress(), packet.getPort());
                 System.out.println("Responding to client: " + new String(packet.getData(), 0, packet.getLength()));
                 socket.send(packet);
-            }catch(SocketTimeoutException e){
+
+            }
+            catch(SocketTimeoutException e){
                 e.printStackTrace();
                 // send
                 byte[] timeoutmsgbuf = new byte[256];
@@ -128,12 +106,10 @@ public class QuoteServerThread extends Thread {
                     socket.setSoTimeout(0);
                     socket.send(packet);
                     System.out.println("TIMEOUT: client in process did not responding in time. Client is dropped.");
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
-                finally {
-                    reset();
-                }
+                catch (IOException e1) {e1.printStackTrace();}
+                finally {reset();}
+
             }
             catch(Exception e)
             {
@@ -153,6 +129,18 @@ public class QuoteServerThread extends Thread {
         } catch (SocketException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean validateNumber(String toValidate)
+    {
+        try{
+            int guessNumber = Integer.parseInt(toValidate);
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+        return true;
     }
 
 }
