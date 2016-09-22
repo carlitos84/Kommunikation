@@ -1,11 +1,5 @@
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 
-/**
- * Created by Teddy on 2016-09-22.
- */
 public class Client {
     private InetAddress ipAdress;
     private String nickname;
@@ -34,12 +28,16 @@ public class Client {
 
     public void addMessage(String message)
     {
-        messageQueue.add(message);
+        synchronized (messageQueue) {
+            messageQueue.add(message);
+        }
     }
 
     public String getMessageForClient()
     {
-        return this.messageQueue.poll();
+        synchronized (messageQueue) {
+            return this.messageQueue.poll();
+        }
     }
 
     public InetAddress getIpAdress()
@@ -64,7 +62,9 @@ public class Client {
 
     public boolean hasMessageForClient()
     {
-        return this.messageQueue.isEmpty();
+        synchronized (messageQueue) {
+            return !this.messageQueue.isEmpty();
+        }
     }
 
 }

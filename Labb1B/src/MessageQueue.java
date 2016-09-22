@@ -1,9 +1,5 @@
 import java.util.ArrayList;
-import java.util.Queue;
 
-/**
- * Created by Teddy on 2016-09-22.
- */
 public class MessageQueue{
     private int size;
     private ArrayList<String> messageList;
@@ -28,13 +24,15 @@ public class MessageQueue{
         return messageList.remove(0);
     }
 
+
+    //Vi implementerade isEmpty() tvärtom här och även när vi kallade på den
     public boolean isEmpty()
     {
         if(size > 0)
         {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
 

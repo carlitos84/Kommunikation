@@ -2,11 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Teddy on 2016-09-22.
- */
 public class ClientThread implements Runnable{
     private Client client;
     private DatagramSocket socket;

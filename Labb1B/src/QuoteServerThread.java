@@ -106,7 +106,8 @@ public class QuoteServerThread extends Thread {
 
     private void whoCommand(int clientIndex)
     {
-        clientList.get(clientIndex).addMessage("Active clients:");
+        Client cli = clientList.get(clientIndex);
+        cli.addMessage("Active clients:");
         for(Client c : clientList)
         {
             clientList.get(clientIndex).addMessage(c.getNickname());
