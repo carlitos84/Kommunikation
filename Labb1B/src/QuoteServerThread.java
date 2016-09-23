@@ -32,7 +32,7 @@ public class QuoteServerThread extends Thread {
                 DatagramPacket packet = new DatagramPacket(readbuf, readbuf.length);
 
                 socket.receive(packet);
-                int indexOfClient = isClientKnown(packet.getAddress());
+                int indexOfClient = isClientKnown(packet.getAddress(), packet.getPort());
                 message = new String(packet.getData(), 0, packet.getLength());
 
                 if(message.length() == 0)
@@ -43,7 +43,7 @@ public class QuoteServerThread extends Thread {
                 {
                     commandHandler(message, indexOfClient);
                 }
-                else if(message.equals("HELLO") && !checkIfClientExist(packet.getAddress()) )
+                else if(message.equals("HELLO") && !checkIfClientExist(packet.getAddress(), packet.getPort()) )
                 {
                     //create new client
                     clientList.add(new Client(packet.getAddress(), clientIDCounter++, packet.getPort(), socket));
@@ -52,22 +52,42 @@ public class QuoteServerThread extends Thread {
                     Thread c = new Thread(new ClientThread(clientList.get(clientList.size()-1)));
                     c.start();
                 }
+                else if(indexOfClient >=0 )
+                {
+                    sendMessageToClients(indexOfClient, message);
+                }
             }
             catch(IOException e)
             {
                 e.printStackTrace();
                 serverOn = false;
             }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
         socket.close();
     }
 
-    private int isClientKnown(InetAddress clientIp)
+    private void sendMessageToClients(int clientIndex, String msg)
+    {
+        String msgToSend = clientList.get(clientIndex).getNickname().concat(": " + msg);
+        for(int i = 0;i< clientList.size();i++)
+        {
+            if(i != clientIndex)
+            {
+                clientList.get(i).addMessage(msgToSend);
+            }
+        }
+    }
+
+    private int isClientKnown(InetAddress clientIp, int clientPort)
     {
         int indexOfClient = -1;
         for(int i = 0;i<clientList.size();i++)
         {
-            if(clientList.get(i).getIpAdress().equals(clientIp))
+            if(clientList.get(i).getIpAdress().equals(clientIp) && clientList.get(i).getPort() == clientPort)
             {
                 return i;
             }
@@ -79,7 +99,7 @@ public class QuoteServerThread extends Thread {
     {
         if(message.length() > 5 && message.substring(0,5).equals("/nick"))
         {
-            System.out.println("nick: " + message);
+            changeClientNickname(indexOfClient, message);
         }
         else
         {
@@ -99,13 +119,57 @@ public class QuoteServerThread extends Thread {
                     System.out.println(message);
                     break;
                 case "/help":
+                    helpCommand(indexOfClient);
                     System.out.println(message);
                     break;
                 default:
-                    System.out.println("error: felkommandon there is no " + message);
-                    //fel command
+                    clientList.get(indexOfClient).addMessage("error: felkommandon there is no " + message);
+                    System.out.println("error: client has typed wrong command " + message);
             }
         }
+    }
+
+    private void changeClientNickname(int indexOfClient, String message)
+    {
+        if(!nicknameTaken(indexOfClient, message))
+        {
+            String newNickname = message.substring(6,message.length());
+            clientList.get(indexOfClient).changeNickname(newNickname);
+            clientList.get(indexOfClient).addMessage("Your nickmane is now: " + newNickname);
+            System.out.println("client newnick: " + message);
+        }
+        else
+        {
+            clientList.get(indexOfClient).addMessage("The nickname is taken.");
+        }
+    }
+
+    private boolean nicknameTaken(int index, String msg)
+    {
+        boolean nickExist = false;
+        if(msg.length() != 6 && msg.charAt(5) == ' ')
+        {
+            String nickname = msg.substring(6, msg.length());
+            for(Client c : clientList)
+            {
+               if(c.getNickname().equals(nickname))
+               {
+                    nickExist = true;
+               }
+            }
+        }
+        else
+        {
+            clientList.get(index).addMessage("Wrong Command!");
+        }
+
+        return nickExist;
+    }
+
+    private void helpCommand(int index)
+    {
+        String allCommands = "/quit\n/who\n/nick <nickname>\n/help";
+        clientList.get(index).addMessage(allCommands);
     }
 
     private void whoCommand(int clientIndex)
@@ -118,13 +182,13 @@ public class QuoteServerThread extends Thread {
         }
     }
 
-    private boolean checkIfClientExist(InetAddress clientIp)
+    private boolean checkIfClientExist(InetAddress clientIp, int clientPort)
     {
         boolean exist = false;
 
         for(Client c : clientList)
         {
-            if(c.getIpAdress().equals(clientIp))
+            if(c.getIpAdress().equals(clientIp) && c.getPort() == clientPort)
             {
                 exist = true;
             }

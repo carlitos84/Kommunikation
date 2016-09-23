@@ -1,6 +1,7 @@
 import javax.xml.crypto.Data;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 public class Client {
     private InetAddress ipAdress;
@@ -17,7 +18,11 @@ public class Client {
         messageQueue = new MessageQueue();
         this.port = port;
         clientInactive = false;
-        this.socket = serverSocket;
+        try {
+            socket = new DatagramSocket(port);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setNickname(String nickname)
@@ -74,6 +79,11 @@ public class Client {
     public DatagramSocket getSocket()
     {
         return this.socket;
+    }
+
+    public void changeNickname(String newNickname)
+    {
+        nickname = newNickname;
     }
 
 }

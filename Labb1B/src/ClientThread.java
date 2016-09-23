@@ -8,6 +8,7 @@ import java.net.SocketException;
 public class ClientThread implements Runnable{
     private Client client;
 
+
     public ClientThread(Client client)
     {
         this.client = client;
@@ -28,6 +29,10 @@ public class ClientThread implements Runnable{
             }
         }
         catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
