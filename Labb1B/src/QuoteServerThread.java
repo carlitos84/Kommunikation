@@ -106,7 +106,6 @@ public class QuoteServerThread extends Thread {
                     //fel command
             }
         }
-
     }
 
     private void whoCommand(int clientIndex)

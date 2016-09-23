@@ -1,3 +1,5 @@
+import com.sun.prism.shader.DrawCircle_ImagePattern_AlphaTest_Loader;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,16 +15,15 @@ public class ClientThread implements Runnable{
 
     @Override
     public void run() {
-
         try{
-            sendMessageToClient("Welcome!");
+            sendMessageToClient("Welcome!", client);
             while(!client.isClientInactive())
             {
                 if(client.hasMessageForClient())
                 {
                     String txt = client.getMessageForClient();
                     System.out.println("send message to client: " + txt);
-                    sendMessageToClient(txt);
+                    sendMessageToClient(txt, client);
                 }
             }
         }
@@ -32,11 +33,11 @@ public class ClientThread implements Runnable{
         }
     }
 
-    private void sendMessageToClient (String message) throws IOException {
+    static synchronized void sendMessageToClient (String message, Client sendingClient) throws IOException {
 
             byte[] writebuf = new byte[256];
             writebuf = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(writebuf, writebuf.length, client.getIpAdress(), client.getPort());
-            client.getSocket().send(packet);
+            DatagramPacket packet = new DatagramPacket(writebuf, writebuf.length, sendingClient.getIpAdress(), sendingClient.getPort());
+            sendingClient.getSocket().send(packet);
     }
 }
