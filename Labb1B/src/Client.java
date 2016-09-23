@@ -1,3 +1,5 @@
+import javax.xml.crypto.Data;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Client {
@@ -6,14 +8,16 @@ public class Client {
     private MessageQueue messageQueue;
     private boolean clientInactive;
     private int port;
+    private DatagramSocket socket = null;
 
-    public Client(InetAddress IP, int GuestID, int port)
+    public Client(InetAddress IP, int GuestID, int port, DatagramSocket serverSocket)
     {
         ipAdress = IP;
         nickname = "Guess" + Integer.toString(GuestID);
         messageQueue = new MessageQueue();
         this.port = port;
         clientInactive = false;
+        this.socket = serverSocket;
     }
 
     public void setNickname(String nickname)
@@ -65,6 +69,11 @@ public class Client {
         synchronized (messageQueue) {
             return !this.messageQueue.isEmpty();
         }
+    }
+
+    public DatagramSocket getSocket()
+    {
+        return this.socket;
     }
 
 }

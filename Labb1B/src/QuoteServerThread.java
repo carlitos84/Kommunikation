@@ -30,18 +30,23 @@ public class QuoteServerThread extends Thread {
 
                 // receive message
                 DatagramPacket packet = new DatagramPacket(readbuf, readbuf.length);
+
                 socket.receive(packet);
                 int indexOfClient = isClientKnown(packet.getAddress());
                 message = new String(packet.getData(), 0, packet.getLength());
 
-                if(message.charAt(0) == '/' && indexOfClient >= 0)
+                if(message.length() == 0)
+                {
+                    System.out.println("message is empty!");
+                }
+                else if(message.charAt(0) == '/' && indexOfClient >= 0)
                 {
                     commandHandler(message, indexOfClient);
                 }
-                if(message.equals("HELLO") && !checkIfClientExist(packet.getAddress()) )
+                else if(message.equals("HELLO") && !checkIfClientExist(packet.getAddress()) )
                 {
                     //create new client
-                    clientList.add(new Client(packet.getAddress(), clientIDCounter++, packet.getPort()));
+                    clientList.add(new Client(packet.getAddress(), clientIDCounter++, packet.getPort(), socket));
                     System.out.println("client port: " + (clientList.get(clientList.size()-1)).getPort());
                     System.out.println("list size: " + clientList.size());
                     Thread c = new Thread(new ClientThread(clientList.get(clientList.size()-1)));
@@ -82,12 +87,12 @@ public class QuoteServerThread extends Thread {
             {
                 case "/quit":
                     clientList.get(indexOfClient).setClientInactive();
-                    clientList.remove(indexOfClient);
+                    Client cli = clientList.remove(indexOfClient);
                     for (Client c : clientList)
                     {
                         System.out.println("client: " + c.getNickname());
                     }
-                    System.out.println("client " + indexOfClient + "has quitted!");
+                    System.out.println("client " + cli.getNickname() + " has quitted!");
                     break;
                 case "/who":
                     whoCommand(indexOfClient);

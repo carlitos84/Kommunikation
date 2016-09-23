@@ -5,18 +5,10 @@ import java.net.SocketException;
 
 public class ClientThread implements Runnable{
     private Client client;
-    private DatagramSocket socket;
 
     public ClientThread(Client client)
     {
         this.client = client;
-        try {
-            System.out.println("before");
-            socket = new DatagramSocket(client.getPort());
-            System.out.println("after");
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -29,7 +21,7 @@ public class ClientThread implements Runnable{
                 if(client.hasMessageForClient())
                 {
                     String txt = client.getMessageForClient();
-                    System.out.println("client message: " + txt);
+                    System.out.println("send message to client: " + txt);
                     sendMessageToClient(txt);
                 }
             }
@@ -38,15 +30,13 @@ public class ClientThread implements Runnable{
         {
             e.printStackTrace();
         }
-        finally {
-            socket.close();
-        }
     }
 
     private void sendMessageToClient (String message) throws IOException {
+
             byte[] writebuf = new byte[256];
             writebuf = message.getBytes();
             DatagramPacket packet = new DatagramPacket(writebuf, writebuf.length, client.getIpAdress(), client.getPort());
-            socket.send(packet);
+            client.getSocket().send(packet);
     }
 }
