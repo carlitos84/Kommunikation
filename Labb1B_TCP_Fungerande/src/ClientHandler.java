@@ -30,7 +30,8 @@ public class ClientHandler implements Runnable{
         BufferedReader in = null;
 
         while(running) {
-            Socket clientSocket = listenForClients();
+
+            Socket clientSocket = listenForClient();
 
             startClientThread(clientSocket, guestId++);
 
@@ -51,13 +52,12 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    private Socket listenForClients(){
+    private Socket listenForClient(){
         Socket clientSocket = null;
         try{
             System.out.println("Server listening...");
 
             clientSocket = socket.accept();
-
             writeMessage(clientSocket, "Welcome");
 
         }catch (IOException e){

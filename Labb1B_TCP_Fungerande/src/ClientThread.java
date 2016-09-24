@@ -17,17 +17,14 @@ public class ClientThread implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Client thread created");
+
         BufferedReader in = null;
 
         //Create input stream
         in = createInputStream();
 
-
-
         //Create message sender thread
         OutputStream out = createOutputStream(socket);
-
         //Create sending thread for client (messages -> client)
         Thread senderT = new Thread(new MessageSender(out, client));
         senderT.start();
@@ -48,13 +45,13 @@ public class ClientThread implements Runnable{
                  //Empty message, do nothing
             }
             else {
-                //Not implemented, returns same as
                 CommandHandler.commandHandler(messageFromClient, client);
             }
         }
         //Remove inactive client
         CommandHandler.removeClient(client);
 
+        //Join sender thread
         try {
             senderT.join();
         } catch (InterruptedException e) {

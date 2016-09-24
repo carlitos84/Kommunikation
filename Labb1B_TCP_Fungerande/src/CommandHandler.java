@@ -23,9 +23,14 @@ public class CommandHandler {
 
         System.out.println("Index of client = " +indexOfClient);
 
-        if(message.length() > 5 && message.substring(0,5).equals("/nick") && message.charAt(5) == ' ')
+        if(message.length() >= 5 && message.substring(0,5).equals("/nick") )
         {
-            changeClientNickname(client, message);
+            if(message.length() > 6 && message.charAt(5) == ' ') {
+                changeClientNickname(client, message);
+            }
+            else {
+                clientList.get(indexOfClient).addMessage("error: empty argument. Use '/nick <nickname>'");
+            }
         }
         else if (message.charAt(0) == '/'){
             switch (message) {
