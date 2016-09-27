@@ -24,7 +24,7 @@ public class MessageQueue {
         if(size > 0)
         {
             size--;
-            return messageList.remove(0);
+            return (String) messageList.remove(0);
         }
         return null;
     }

@@ -11,6 +11,7 @@ public class QuoteServerThread extends Thread {
     protected String message;
     protected InetAddress activeClientIP;
     protected int activeClientPort;
+    protected long timer;
     protected boolean clientInProgress = false;
     protected boolean gameSessionOn = false;
     protected boolean handshakeDone = false;
@@ -33,13 +34,27 @@ public class QuoteServerThread extends Thread {
                 byte[] writebuf = new byte[256];
                 byte[] readbuf = new byte[256];
 
+
                 // receive request
                 DatagramPacket packet = new DatagramPacket(readbuf, readbuf.length);
                 socket.receive(packet);
+                System.out.println("timer: " + (System.currentTimeMillis()-timer));
+
+                if((packet.getAddress().equals(activeClientIP) && packet.getPort() == activeClientPort))
+                {
+                    //reset timer
+                    timer = System.currentTimeMillis();
+                }
+
+                if(System.currentTimeMillis()-timer >= 10000)
+                {
+                    clientInProgress = false;
+                }
                 if (!clientInProgress) {
                     activeClientIP = packet.getAddress();
                     activeClientPort = packet.getPort();
                     clientInProgress = true;
+                    timer = System.currentTimeMillis();
                 }
                 message = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("message recieve from a client: " + message);
@@ -66,7 +81,6 @@ public class QuoteServerThread extends Thread {
                         {
                             writebuf = "Not a number! Try again.".getBytes();
                         }
-                        socket.setSoTimeout(15000);
                     }
                     else //ex. GUESSa12
                     {
@@ -78,10 +92,11 @@ public class QuoteServerThread extends Thread {
                 {
                     writebuf = "READY".getBytes();
                 }
-                else if (message.equals("HELLO")) {
+                else if (message.equals("HELLO") && activeClientIP.equals(packet.getAddress()) && activeClientPort == packet.getPort()) {
+                    System.out.println("Active clientIP: " + activeClientIP + " port: " + activeClientPort);
+                    System.out.println("connectiong client IP: " + packet.getAddress() + " port:" + packet.getPort());
                     writebuf = "OK".getBytes();
                     handshakeDone = true;
-                    socket.setSoTimeout(10000);
                 }
                 else {
                     String errormsg = new String("Error! Wrong input connection is now dropped.");
@@ -91,24 +106,9 @@ public class QuoteServerThread extends Thread {
 
                 // send the response to the client who reached to server
                 packet = new DatagramPacket(writebuf, writebuf.length, packet.getAddress(), packet.getPort());
-                System.out.println("Responding to client: " + new String(packet.getData(), 0, packet.getLength()));
+                System.out.println("Responding to active client: " + new String(packet.getData(), 0, packet.getLength()));
                 socket.send(packet);
 
-            }
-            catch(SocketTimeoutException e){
-                e.printStackTrace();
-                // send
-                byte[] timeoutmsgbuf = new byte[256];
-                timeoutmsgbuf = "Error: Timeout! Client did no response in time".getBytes();
-                DatagramPacket packet = new DatagramPacket(timeoutmsgbuf, timeoutmsgbuf.length, activeClientIP, activeClientPort);
-
-                try {
-                    socket.setSoTimeout(0);
-                    socket.send(packet);
-                    System.out.println("TIMEOUT: client in process did not responding in time. Client is dropped.");
-                }
-                catch (IOException e1) {e1.printStackTrace();}
-                finally {reset();}
 
             }
             catch(Exception e)
@@ -124,11 +124,7 @@ public class QuoteServerThread extends Thread {
     {
         clientInProgress = false;
         handshakeDone = false;
-        try {
-            socket.setSoTimeout(0);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private boolean validateNumber(String toValidate)
