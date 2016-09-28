@@ -24,6 +24,11 @@ public class Item {
         return DBItem.searchItemByModel(model);
     }
 
+    public static Item searchItemsById(int itemId)
+    {
+        return DBItem.searchItemById(itemId);
+    }
+
     public Item(int id, String manufactor, int price, String model, int quantity)
     {
         this.id = id;
@@ -53,5 +58,9 @@ public class Item {
         return quantity;
     }
 
+    public String toString()
+    {
+        return  "\n" + String.valueOf(id) + " " + manufactor + " " + String.valueOf(price) + " " + model + " " + String.valueOf(quantity);
+    }
 
 }

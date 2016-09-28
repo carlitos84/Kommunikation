@@ -14,25 +14,26 @@ public class DBItem extends Item {
     public static ArrayList searchItemByManufactor(String itemManufactor)
     {
         String query = "SELECT * FROM t_item WHERE K_Manufactor = " +"\"" + itemManufactor +"\";";
-        return getItemsByQuery(query);
+        return getItemsWithQuery(query);
     }
 
     public static ArrayList searchItemByModel(String model)
     {
         String query = "SELECT * FROM t_item WHERE K_Model = " + "\"" + model + "\";";
-        return getItemsByQuery(query);
+        return getItemsWithQuery(query);
     }
 
-    private static ArrayList getItemsByQuery(String query)
+    public static DBItem searchItemById(int itemId)
+    {
+        String query = "SELECT * FROM t_item WHERE K_Id = " + "\"" + itemId + "\";";
+        return (DBItem)getItemsWithQuery(query).get(0);
+    }
+
+    private static ArrayList getItemsWithQuery(String query)
     {
         ArrayList<DBItem> itemList = new ArrayList<>();
         try{
-            DBManager cone = new DBManager();
-            Connection con = DBManager.getCon();
-            System.out.println("before creating statement");
-            Statement st = con.createStatement();
-            System.out.println("after creating statement");
-            ResultSet rs = st.executeQuery(query);
+            ResultSet rs = DBManager.getItemsByQuery(query);
             while(rs.next())
             {
                 int id = rs.getInt("K_Id");
@@ -46,7 +47,6 @@ public class DBItem extends Item {
         {
             e.printStackTrace();
         }
-
         return itemList;
     }
 

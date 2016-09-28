@@ -23,6 +23,14 @@ public class LookItems {
         return getItemHashtable(itemList);
     }
 
+    public Hashtable getItemsWithId(int itemId)
+    {
+        Item i = Item.searchItemsById(itemId);
+        ArrayList<Item> itemList = new ArrayList<Item>();
+        itemList.add(i);
+        return getItemHashtable(itemList);
+    }
+
     private Hashtable getItemHashtable(ArrayList itemList)
     {
         Hashtable table = new Hashtable();
@@ -41,7 +49,6 @@ public class LookItems {
 
             table.put("Item" + i, item);
         }
-
         return table;
     }
 }

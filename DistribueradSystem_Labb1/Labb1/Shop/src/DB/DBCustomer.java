@@ -1,5 +1,7 @@
 package DB;
 
+import BO.User;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +10,7 @@ import java.sql.Statement;
 /**
  * Created by Teddy on 2016-09-28.
  */
-public class DBCustomer extends User {
+public class DBCustomer extends User{
 
     public static User getCustomerByLogin(String usrname, String pwd)
     {

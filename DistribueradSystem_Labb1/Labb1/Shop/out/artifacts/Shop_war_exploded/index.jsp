@@ -10,8 +10,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@page import= "BO.LookItems" %>
 <%@page import= "java.util.Hashtable" %>
+<%@ page import="DB.DBManager" %>
 <%
-
+  DBManager.init();
   String manufactor = request.getParameter("Gibson");
   LookItems look = new LookItems();
   Hashtable table =  look.getItemsWithManufactor("Gibson");
@@ -22,10 +23,14 @@
     for (int i = 0 ; i < size ; i++) {
       Hashtable item = (Hashtable) table.get("Item"+i);
   %>
-  <tr><td> manufactor: </td> <td> <%= item.get("manufactor")
-  %> </td>
-    <td> price: </td> <td> <%= item.get("price")
-  %> </td>
+  <tr>
+      <td> manufactor: </td> <td> <%= item.get("manufactor")%> </td>
+      <td> model: </td> <td> <%= item.get("model")%> </td>
+      <td> price: </td> <td> <%= item.get("price")%> </td>
+      <td> amount: </td> <td> <%= item.get("quantity")%> </td>
+
   </tr>
   <% } %>
 </table>
+
+

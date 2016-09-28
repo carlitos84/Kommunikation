@@ -38,7 +38,7 @@ public class ShoppingCart {
             item.put("model", i.getModel());
             item.put("price", i.getPrice());
             item.put("quantity", i.getQuantity());
-            table.put("Item2" + i, item);
+            table.put("Item" + i, item);
         }
         return table;
     }
