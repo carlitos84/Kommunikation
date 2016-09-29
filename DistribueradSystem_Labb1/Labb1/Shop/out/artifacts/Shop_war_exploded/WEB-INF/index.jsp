@@ -11,13 +11,27 @@
 <%@page import= "BO.LookItems" %>
 <%@page import= "java.util.Hashtable" %>
 <%@ page import="BO.BOManager" %>
+<%@ page import="java.util.List" %>
 <%
-    BOManager.init();
+
+    //BOManager.init();
+
   String manufactor = request.getParameter("Gibson");
   LookItems look = new LookItems();
   Hashtable table =  look.getItemsWithManufactor("Gibson");
   int size = (int) table.get("size");
 %>
+<tr>
+    <td> test: </td><%=(String) request.getAttribute("test")%>
+</tr>
+<tr>
+    <form action="index.jsp">
+        Search Google:
+        <input type="text" name="googlesearch">
+        <input type="submit">
+    </form>
+</tr>
+
 <table>
   <%
     for (int i = 0 ; i < size ; i++) {

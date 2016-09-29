@@ -7,10 +7,10 @@ import java.util.Iterator;
 /**
  * Created by Teddy on 2016-09-28.
  */
-public class ShoppingCart {
+public class Order {
     private ArrayList<Item> shoppingCart;
 
-    public ShoppingCart()
+    public Order()
     {
         shoppingCart = new ArrayList<>();
     }

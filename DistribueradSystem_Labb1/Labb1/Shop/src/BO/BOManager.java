@@ -8,11 +8,11 @@ import java.util.Hashtable;
  * Created by Teddy on 2016-09-28.
  */
 public class BOManager {
-    private ShoppingCart shopCart;
+    private Order shopCart;
 
     public BOManager()
     {
-        shopCart = new ShoppingCart();
+        shopCart = new Order();
     }
 
     public static void init()
