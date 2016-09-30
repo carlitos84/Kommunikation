@@ -10,13 +10,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <tr>
-    <td> test: </td>
-</tr>
-<tr>
     <form action="index.jsp" method="post">
-        Search Google:
+        Search:
         <input type="text" name="searchfield">
+        <select name="searchBy">
+            <option value="manufactor">Manufactor</option>
+            <option value="model">Model</option>
+        </select>
         <input type="submit">
+
     </form>
 </tr>
 

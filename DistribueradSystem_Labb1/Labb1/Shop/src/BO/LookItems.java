@@ -42,6 +42,7 @@ public class LookItems {
             Hashtable item = new Hashtable();
             Item itemTmp = (Item) it.next();
             System.out.print(itemTmp.getManufactor());
+            item.put("id", itemTmp.getId());
             item.put("manufactor", itemTmp.getManufactor());
             item.put("model", itemTmp.getModel());
             item.put("price", itemTmp.getPrice());

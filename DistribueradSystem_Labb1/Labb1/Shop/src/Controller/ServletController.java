@@ -21,13 +21,14 @@ import java.util.Hashtable;
 @WebServlet(name = "ServletController", urlPatterns = "/index.jsp")
 public class ServletController extends HttpServlet {
     BOManager bo;
-
+    ShoppingCart cart;
     @Override
     public void init(ServletConfig config) throws ServletException
     {
+        BOManager.init();
         bo = new BOManager();
         System.out.println("init");
-        BOManager.init();
+        cart = new ShoppingCart();
     }
 
     @Override
@@ -39,17 +40,62 @@ public class ServletController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String search = request.getParameter("searchfield");
-        if(search != null || !search.trim().equals("")) {
-            String searchString = request.getParameter("searchfield");
-            HttpSession session = request.getSession();
-            Hashtable table = bo.searchByManufactor(searchString);
+        String searchString = request.getParameter("searchfield");
+        String searchBy = request.getParameter("searchBy");
 
+
+
+        // Get the size of the result hashtable to add item to cart.
+        Integer sizeOfResult = (Integer)request.getSession().getAttribute("size");
+        System.out.println("sizeOfResult = " + sizeOfResult);
+        if(sizeOfResult != null)
+        {
+
+            for(int i=0;i<sizeOfResult;i++)
+            {
+                String buttonResult = request.getParameter("button"+i);
+                System.out.println("buttonResult:" + buttonResult);
+                if( buttonResult != null)
+                {
+                    System.out.println("buttonResult in not null:" + buttonResult + "   amountfield: " + request.getParameter("amountfield"+i));
+
+                    Hashtable resultTable = (Hashtable) request.getSession().getAttribute("table");
+                    Hashtable itemAddToCart = (Hashtable) resultTable.get("Item"+i);
+                    int amount = Integer.parseInt(request.getParameter("amountfield"+i));
+                    cart.addToCart(itemAddToCart, amount);
+                }
+            }
+            //cart table
+            //System.out.println(cart.lookCart());
+            request.getSession().setAttribute("shoppingcarttable", cart.lookCart());
+            request.getSession().setAttribute("shoppingcartsize", cart.getSize());
+            //cart table end
+            request.getRequestDispatcher("/WEB-INF/search.jsp").forward(request, response);
+        }
+
+        //display search result
+        if(searchString != null || !searchString.trim().equals("")) {
+            HttpSession session = request.getSession();
+
+            Hashtable table = null;
+            switch (searchBy)
+            {
+                case "manufactor":
+                    table = bo.searchByManufactor(searchString);
+                    break;
+                case "model":
+                    table = bo.searchByModel(searchString);
+                    break;
+                default:
+                    System.out.println("In switch case default: " + searchBy);
+            }
+            session.setAttribute("shoppincarttable", cart.lookCart());
+            session.setAttribute("shoppingcartsize", cart.getSize());
             session.setAttribute("size", table.get("size"));
             session.setAttribute("table", table);
-            for(int i = 0; i < table.size(); i++) {
+            /*for(int i = 0; i < table.size(); i++) {
                 System.out.println(table.get("Item" +i));
-            }
+            }*/
             session.setAttribute("table", table);
             request.getRequestDispatcher("/WEB-INF/search.jsp").forward(request, response);
         }
@@ -57,11 +103,7 @@ public class ServletController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("KJhnsgd");
-        String search = (String) request.getParameter("googlesearch");
-        System.out.println(search);
-        String t = "detta är ett test";
-        request.getSession().setAttribute("test", t);
+
         request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
 
     }

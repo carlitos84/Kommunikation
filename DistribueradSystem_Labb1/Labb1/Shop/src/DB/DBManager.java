@@ -29,7 +29,7 @@ public class DBManager {
             e.printStackTrace();
         }
         database = "db_test";
-        server = "jdbc:mysql://localhost:3306/" + database;
+        server = "jdbc:mysql://130.229.146.135:3306/" + database;
         user = "customer";
         pwd = "customer";
         try{

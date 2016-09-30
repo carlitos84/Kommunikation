@@ -58,6 +58,8 @@ public class Item {
         return quantity;
     }
 
+    public int getId(){return id;}
+
     public String toString()
     {
         return  "\n" + String.valueOf(id) + " " + manufactor + " " + String.valueOf(price) + " " + model + " " + String.valueOf(quantity);
