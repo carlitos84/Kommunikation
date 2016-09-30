@@ -12,7 +12,7 @@ public class BOManager {
 
     public BOManager()
     {
-        shopCart = new Order();
+        //shopCart = new Order();
     }
 
     public static void init()
