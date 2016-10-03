@@ -6,6 +6,7 @@ import BO.BOManager;
  * Created by Teddy on 2016-10-03.
  */
 public class User {
+    private int id;
     private String username;
     private String password;
     private boolean verifedUser;
@@ -39,6 +40,7 @@ public class User {
 
     public User()
     {
+        this.id = -1;
         this.username = null;
         this.password = null;
         this.verifedUser = false;
@@ -90,5 +92,9 @@ public class User {
     public void setPassword(String newpassword)
     {
         password = newpassword;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

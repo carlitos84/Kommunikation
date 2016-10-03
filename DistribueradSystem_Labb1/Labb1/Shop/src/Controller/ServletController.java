@@ -52,8 +52,22 @@ public class ServletController extends HttpServlet {
         String tmpusername = request.getParameter("usrname");
         String tmppassword = request.getParameter("psw");
         String usertype = request.getParameter("usertype");
-
         String logoutbutton = request.getParameter("logoutbutton");
+        String makeorderbutton = request.getParameter("makeorderbutton");
+
+        System.out.println("************start doPost*********");
+
+        System.out.println("MakeorderButton : "+ makeorderbutton);
+        if(makeorderbutton != null)
+        {
+            int result = BOManager.makeOrder(cart, user.getUsername(), user.getPassword());
+            if(result == 200)
+            {
+                cart.emptycart();
+            }
+            System.out.println("Result of ORDER: " + result);
+        }
+
         if(logoutbutton != null)
         {
             validation = false;
@@ -153,6 +167,7 @@ public class ServletController extends HttpServlet {
 
         request.getSession().setAttribute("totalprice",cart.getTotalPrice());
         request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+        System.out.println("************end doPost*********");
     }
 
     @Override

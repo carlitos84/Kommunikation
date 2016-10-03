@@ -41,6 +41,8 @@ public class DBCustomer extends User{
         return user;
     }
 
+
+
     private DBCustomer(int id, String username, String password, boolean customer, boolean staff, boolean admin) {
         super(id, username, password, customer, staff, admin);
     }

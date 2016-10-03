@@ -8,38 +8,63 @@ import java.util.Iterator;
  * Created by Teddy on 2016-09-28.
  */
 public class Order {
-    private ArrayList<Item> shoppingCart;
+    private int size;
+    private String username;
+    private String password;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    private ArrayList<ItemDTO> orderList;
 
     public Order()
     {
-        shoppingCart = new ArrayList<>();
+        orderList = new ArrayList<>();
+        size = 0;
     }
 
-    public void addItem(Item item)
+    public int getSize()
     {
-        shoppingCart.add(item);
+        return size;
     }
 
-    public boolean removeItem(Item item)
+    public int getItemIdFrom(int index)
     {
-        return shoppingCart.remove(item);
+       return orderList.get(index).itemId;
+    }
+    public int getItemAmountToBuyFrom(int index)
+    {
+       return orderList.get(index).amount;
     }
 
-    public Hashtable lookCart()
+    public void addItem(int itemId,int amount)
     {
-        Hashtable table = new Hashtable();
-        table.put("size", shoppingCart.size());
-        Iterator ite = shoppingCart.iterator();
-        while (ite.hasNext())
+        orderList.add(new ItemDTO(itemId, amount));
+        size = orderList.size();
+    }
+
+    private class ItemDTO{
+        private int itemId;
+        private int amount;
+
+        public ItemDTO(int itemId,int amount)
         {
-            Hashtable item = new Hashtable();
-            Item i = (Item) ite.next();
-            item.put("manufactor", i.getManufactor());
-            item.put("model", i.getModel());
-            item.put("price", i.getPrice());
-            item.put("quantity", i.getQuantity());
-            table.put("Item" + i, item);
+            this.itemId = itemId;
+            this.amount =amount ;
         }
-        return table;
     }
+
 }

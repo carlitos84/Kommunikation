@@ -21,7 +21,7 @@
                 System.out.println("shoppingcartSize:" + shoppingcartSize);
                 for (int j = 0 ; j < shoppingcartSize ; j++) {
                     Hashtable shoppingCartItem = (Hashtable) shoppinCartTable.get("Item" + j);
-                    System.out.println(shoppingCartItem);
+
                     %>
         <tr>
             <td> <%= shoppingCartItem.get("manufactor")%> </td>
@@ -33,5 +33,6 @@
         <% } %>
     </tr>
     <tr><td> Total price: <%int totalprice = (int)request.getSession().getAttribute("totalprice");%><%= totalprice%> pesos </td></tr>
+    <tr><td><form method="post" action="index.jsp"><input name="makeorderbutton" value="makeorder" type="submit"></form></td></tr>
 </table>
 

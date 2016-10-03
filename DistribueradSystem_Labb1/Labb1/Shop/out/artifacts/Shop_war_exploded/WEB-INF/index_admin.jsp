@@ -9,7 +9,7 @@
 <html>
 <tr>
     <div><%@include file="login.jsp"%></div>
-    <div><%@include file="search.jsp"%></div>
+    <div><%@include file="work_staff.jsp"%></div>
 </tr>
 <table>
 </table>

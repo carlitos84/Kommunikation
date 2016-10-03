@@ -1,18 +1,18 @@
 package BO;
 
+import Controller.ShoppingCart;
 import DB.DBManager;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
  * Created by Teddy on 2016-09-28.
  */
 public class BOManager {
-    private Order shopCart;
 
     public BOManager()
     {
-        //shopCart = new Order();
     }
 
     public static void init()
@@ -55,15 +55,19 @@ public class BOManager {
         return false;
     }
 
-    public Hashtable getShoppingCart()
+    public static int makeOrder(ShoppingCart cart, String username, String password)
     {
-        return shopCart.lookCart();
+        Order orderList = new Order();
+        orderList.setUsername(username);
+        orderList.setPassword(password);
+        for (int i=0; i<cart.getSize();i++)
+        {
+            ShoppingCart.ItemDTO item = cart.getItem(i);
+            orderList.addItem(item.getId(), item.getQtyInShoppingCart());
+        }
+        return DBManager.makeOrder(orderList);
     }
 
-    public void addToShoppingCart(int itemId)
-    {
-        Item item = Item.searchItemsById(itemId);
-        shopCart.addItem(item);
-    }
+
 
 }

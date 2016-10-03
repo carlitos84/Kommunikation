@@ -13,6 +13,7 @@ public class User {
     private boolean staff;
     private boolean admin;
 
+
     public User(int Id, String username, String password, boolean customer, boolean staff, boolean admin)
     {
         this.Id = Id;
@@ -38,6 +39,10 @@ public class User {
     public boolean isAdmin()
     {
         return admin;
+    }
+    public int getId()
+    {
+        return this.Id;
     }
 
     public static User getUser(String username, String password)

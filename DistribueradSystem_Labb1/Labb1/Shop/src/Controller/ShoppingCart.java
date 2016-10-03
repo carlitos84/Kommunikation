@@ -95,12 +95,17 @@ public class ShoppingCart {
         return table;
     }
 
+    public ItemDTO getItem(int index)
+    {
+        return shoppingcart.get(index);
+    }
+
     public int getTotalPrice()
     {
         return this.totalPrice;
     }
 
-    private class ItemDTO
+    public class ItemDTO
     {
         private int id;
         private String manufactor;
