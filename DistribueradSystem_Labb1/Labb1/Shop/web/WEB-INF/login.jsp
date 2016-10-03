@@ -15,6 +15,7 @@
     {
         String username = (String) request.getSession().getAttribute("username");
 %>
+    <input name="logoutbutton" value="logout" type="submit">
         Welcome <%=username%>! Enjoy a happy shopping!
     <%}
     else
@@ -24,6 +25,11 @@
         <br>
         User password:<br>
         <input type="password" name="psw">
+        <select name="usertype">
+            <option value="customer">Customer</option>
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+        </select>
         <input value="login" type="submit">
     <%}%>
 </form>

@@ -69,6 +69,12 @@ public class ShoppingCart {
         }
     }
 
+    public void emptycart()
+    {
+        shoppingcart = new ArrayList<ItemDTO>();
+        totalPrice = 0;
+    }
+
     public Hashtable lookCart()
     {
         Hashtable table = new Hashtable();

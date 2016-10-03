@@ -23,13 +23,16 @@ public class DBCustomer extends User{
         try{
             Connection con = DBManager.getCon();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM T_Customer WHERE K_Username = " + "\"" + usrname + "\"" + " and K_Password = " + "\"" + pwd + "\";");
+            ResultSet rs = st.executeQuery("SELECT * FROM T_User WHERE K_Username = " + "\"" + usrname + "\"" + " and K_Password = " + "\"" + pwd + "\";");
             while(rs.next())
             {
                 int id = rs.getInt("K_Id");
                 String username = rs.getString("K_Username");
                 String password = rs.getString("K_Password");
-                user = new DBCustomer(id,username,password);
+                boolean customer = rs.getBoolean("K_Customer");
+                boolean staff = rs.getBoolean("K_Staff");
+                boolean admin = rs.getBoolean("K_Admin");
+                user = new DBCustomer(id,username,password, customer, staff, admin);
             }
         }catch (SQLException e)
         {
@@ -38,7 +41,7 @@ public class DBCustomer extends User{
         return user;
     }
 
-    private DBCustomer(int id, String username, String password) {
-        super(id,username, password);
+    private DBCustomer(int id, String username, String password, boolean customer, boolean staff, boolean admin) {
+        super(id, username, password, customer, staff, admin);
     }
 }

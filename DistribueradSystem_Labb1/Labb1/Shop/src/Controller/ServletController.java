@@ -51,14 +51,42 @@ public class ServletController extends HttpServlet {
         String searchBy = request.getParameter("searchBy");
         String tmpusername = request.getParameter("usrname");
         String tmppassword = request.getParameter("psw");
+        String usertype = request.getParameter("usertype");
+
+        String logoutbutton = request.getParameter("logoutbutton");
+        if(logoutbutton != null)
+        {
+            validation = false;
+            request.getSession().setAttribute("validation", validation);
+            user = new User();
+            cart.emptycart();
+            request.getSession().setAttribute("totalprice",cart.getTotalPrice());
+            request.getSession().setAttribute("shoppingcarttable", cart.lookCart());
+            request.getSession().setAttribute("shoppingcartsize", cart.getSize());
+            request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+        }
 
         //validation of user
-        if(user.validateUser(tmpusername, tmppassword))
+        if(validation == false && user.validateUser(tmpusername, tmppassword, usertype))
         {
             request.getSession().setAttribute("username",user.getUsername());
             validation = true;
+            request.getSession().setAttribute("validation", validation);
+            switch (usertype)
+            {
+                case "customer":
+                    request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+                    break;
+                case "staff":
+                    request.getRequestDispatcher("/WEB-INF/index_staff.jsp").forward(request, response);
+                    break;
+                case "admin":
+                    request.getRequestDispatcher("/WEB-INF/index_admin.jsp").forward(request, response);
+                    break;
+                default:
+                    System.out.println("validation of user default!!");
+            }
         }
-
 
         //to remove a certain item
         for(int i=0;i<cart.getSize();i++)
@@ -122,14 +150,14 @@ public class ServletController extends HttpServlet {
             session.setAttribute("resulttable", table);
         }
 
-        request.getSession().setAttribute("validation", validation);
+
         request.getSession().setAttribute("totalprice",cart.getTotalPrice());
         request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("in doGet");
+        System.out.println("*************************in doGet");
         request.getSession().setAttribute("validation", validation);
         request.getSession().setAttribute("resultsize", resultsize);
         request.getSession().setAttribute("shoppingcartsize", cart.getSize());

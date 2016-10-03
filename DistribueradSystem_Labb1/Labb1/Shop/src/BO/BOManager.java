@@ -32,14 +32,27 @@ public class BOManager {
         return look.getItemsWithModel(model);
     }
 
-    public static boolean customerLogin(String username, String password)
+    public static boolean userLogin(String username, String password, String usertype)
     {
+        User user = User.getUser(username,password);
 
-        if(User.getUser(username,password) == null)
+        if(user  == null)
         {
             return false;
         }
-        return true;
+
+        switch (usertype)
+        {
+            case "customer":
+                return user.isCustomer();
+            case "staff":
+                return user.isStaff();
+            case "admin":
+                return user.isAdmin();
+            default:
+                System.out.println("int BOManager-userLogin deafault!!! "+usertype);
+        }
+        return false;
     }
 
     public Hashtable getShoppingCart()
