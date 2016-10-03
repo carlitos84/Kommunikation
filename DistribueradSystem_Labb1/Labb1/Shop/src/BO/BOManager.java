@@ -32,14 +32,13 @@ public class BOManager {
         return look.getItemsWithModel(model);
     }
 
-    public boolean customerLogin(String username, String password)
+    public static boolean customerLogin(String username, String password)
     {
 
         if(User.getUser(username,password) == null)
         {
             return false;
         }
-
         return true;
     }
 

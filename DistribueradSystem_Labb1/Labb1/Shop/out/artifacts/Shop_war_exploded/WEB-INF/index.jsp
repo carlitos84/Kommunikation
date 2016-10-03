@@ -8,22 +8,13 @@
 
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<html>
 <tr>
-    <form action="index.jsp" method="post">
-        Search:
-        <input type="text" name="searchfield">
-        <select name="searchBy">
-            <option value="manufactor">Manufactor</option>
-            <option value="model">Model</option>
-        </select>
-        <input type="submit">
-
-    </form>
+    <div><%@include file="login.jsp"%></div>
+    <div><%@include file="search.jsp"%></div>
+    <div align="right"><%@include file="shoppingcart.jsp"%></div>
 </tr>
-
 <table>
-
 </table>
-
+</html>
 

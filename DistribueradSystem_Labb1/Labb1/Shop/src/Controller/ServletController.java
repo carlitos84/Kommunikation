@@ -22,6 +22,9 @@ import java.util.Hashtable;
 public class ServletController extends HttpServlet {
     BOManager bo;
     ShoppingCart cart;
+    User user ;
+    boolean validation;
+    int resultsize;
     @Override
     public void init(ServletConfig config) throws ServletException
     {
@@ -29,6 +32,10 @@ public class ServletController extends HttpServlet {
         bo = new BOManager();
         System.out.println("init");
         cart = new ShoppingCart();
+        user = new User();
+        validation = false;
+        resultsize = 0;
+
     }
 
     @Override
@@ -42,16 +49,36 @@ public class ServletController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String searchString = request.getParameter("searchfield");
         String searchBy = request.getParameter("searchBy");
+        String tmpusername = request.getParameter("usrname");
+        String tmppassword = request.getParameter("psw");
+
+        //validation of user
+        if(user.validateUser(tmpusername, tmppassword))
+        {
+            request.getSession().setAttribute("username",user.getUsername());
+            validation = true;
+        }
 
 
+        //to remove a certain item
+        for(int i=0;i<cart.getSize();i++)
+        {
+            String buttonRemove = request.getParameter("removebutton"+i);
+            System.out.println("buttonResult:" + buttonRemove);
+            if( buttonRemove != null)
+            {
+                System.out.println("buttonResult in not null:" + buttonRemove + "   amountfield: " + request.getSession().getAttribute("amountremovefield"+i));
+                int amounttoremove = Integer.parseInt(request.getParameter("amountremovefield"+i));
+                cart.removeItem(i, amounttoremove);
+            }
+        }
 
         // Get the size of the result hashtable to add item to cart.
-        Integer sizeOfResult = (Integer)request.getSession().getAttribute("size");
-        System.out.println("sizeOfResult = " + sizeOfResult);
-        if(sizeOfResult != null)
+        resultsize = (Integer)request.getSession().getAttribute("resultsize");
+        System.out.println("sizeOfResult = " + resultsize);
+        if(searchString == null)
         {
-
-            for(int i=0;i<sizeOfResult;i++)
+            for(int i=0;i<resultsize;i++)
             {
                 String buttonResult = request.getParameter("button"+i);
                 System.out.println("buttonResult:" + buttonResult);
@@ -59,7 +86,7 @@ public class ServletController extends HttpServlet {
                 {
                     System.out.println("buttonResult in not null:" + buttonResult + "   amountfield: " + request.getParameter("amountfield"+i));
 
-                    Hashtable resultTable = (Hashtable) request.getSession().getAttribute("table");
+                    Hashtable resultTable = (Hashtable) request.getSession().getAttribute("resulttable");
                     Hashtable itemAddToCart = (Hashtable) resultTable.get("Item"+i);
                     int amount = Integer.parseInt(request.getParameter("amountfield"+i));
                     cart.addToCart(itemAddToCart, amount);
@@ -70,11 +97,11 @@ public class ServletController extends HttpServlet {
             request.getSession().setAttribute("shoppingcarttable", cart.lookCart());
             request.getSession().setAttribute("shoppingcartsize", cart.getSize());
             //cart table end
-            request.getRequestDispatcher("/WEB-INF/search.jsp").forward(request, response);
+
         }
 
         //display search result
-        if(searchString != null || !searchString.trim().equals("")) {
+        if(searchString != null) {
             HttpSession session = request.getSession();
 
             Hashtable table = null;
@@ -91,20 +118,24 @@ public class ServletController extends HttpServlet {
             }
             session.setAttribute("shoppincarttable", cart.lookCart());
             session.setAttribute("shoppingcartsize", cart.getSize());
-            session.setAttribute("size", table.get("size"));
-            session.setAttribute("table", table);
-            /*for(int i = 0; i < table.size(); i++) {
-                System.out.println(table.get("Item" +i));
-            }*/
-            session.setAttribute("table", table);
-            request.getRequestDispatcher("/WEB-INF/search.jsp").forward(request, response);
+            session.setAttribute("resultsize", table.get("size"));
+            session.setAttribute("resulttable", table);
         }
+
+        request.getSession().setAttribute("validation", validation);
+        request.getSession().setAttribute("totalprice",cart.getTotalPrice());
+        request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        System.out.println("in doGet");
+        request.getSession().setAttribute("validation", validation);
+        request.getSession().setAttribute("resultsize", resultsize);
+        request.getSession().setAttribute("shoppingcartsize", cart.getSize());
+        request.getSession().setAttribute("shoppingcarttable", cart.lookCart());
+        request.getSession().setAttribute("totalprice", cart.getTotalPrice());
+        System.out.println("total price: " + cart.getTotalPrice());
         request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
-
     }
 }

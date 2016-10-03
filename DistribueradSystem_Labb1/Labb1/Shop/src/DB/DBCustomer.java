@@ -15,6 +15,11 @@ public class DBCustomer extends User{
     public static User getCustomerByLogin(String usrname, String pwd)
     {
         DBCustomer user = null;
+        if(usrname == null || pwd == null)
+        {
+            return null;
+        }
+
         try{
             Connection con = DBManager.getCon();
             Statement st = con.createStatement();

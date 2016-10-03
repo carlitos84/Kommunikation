@@ -11,21 +11,62 @@ import java.util.Iterator;
  */
 public class ShoppingCart {
     private ArrayList<ItemDTO> shoppingcart;
+    private int totalPrice;
 
     public ShoppingCart()
     {
         shoppingcart = new ArrayList<ItemDTO>();
+        totalPrice = 0;
     }
 
     public void addToCart(Hashtable item, int amountToAdd)
     {
         ItemDTO itemToAdd = new ItemDTO((int)item.get("id"), (String)item.get("manufactor"), (String)item.get("model"), (int)item.get("price"), amountToAdd);
-        shoppingcart.add(itemToAdd);
+        totalPrice += itemToAdd.getPrice();
+        int index = itemIdExistAt(itemToAdd.getId());
+        if(index >=0)
+        {
+            shoppingcart.get(index).addQtyInShoppingCart(amountToAdd);
+        }
+        else
+        {
+            shoppingcart.add(itemToAdd);
+        }
+
+    }
+
+    private int itemIdExistAt(int id)
+    {
+        int existAt = -1;
+        for (int i=0;i<shoppingcart.size();i++)
+        {
+            if(shoppingcart.get(i).getId() == id)
+            {
+                existAt = i;
+            }
+        }
+        return existAt;
     }
 
     public int getSize()
     {
         return shoppingcart.size();
+    }
+
+    public void removeItem(int index, int amount)
+    {
+        ItemDTO item = shoppingcart.get(index);
+
+        if(item.getQtyInShoppingCart() - amount <= 0)
+        {
+            shoppingcart.remove(item);
+            totalPrice -= item.getPrice()*item.getQtyInShoppingCart();
+        }
+        else
+        {
+            item.removeQtyInShoppingCart(amount);
+            totalPrice -= item.getPrice()*amount;
+        }
     }
 
     public Hashtable lookCart()
@@ -45,21 +86,12 @@ public class ShoppingCart {
             item.put("quantity", itemTmp.getQtyInShoppingCart());
             table.put("Item" + i, item);
         }
-
-        /*Hashtable table = new Hashtable();
-       // table.put("size", shoppingcart.size());
-        Iterator ite = shoppingcart.iterator();
-        while (ite.hasNext())
-        {
-            Hashtable item = new Hashtable();
-            ItemDTO i = (ItemDTO) ite.next();
-            item.put("manufactor", i.getManufactor());
-            item.put("model", i.getModel());
-            item.put("price", i.getPrice());
-            item.put("quantity", i.getQtyInShoppingCart());
-            table.put("Item" + i, item);
-        }*/
         return table;
+    }
+
+    public int getTotalPrice()
+    {
+        return this.totalPrice;
     }
 
     private class ItemDTO
@@ -98,5 +130,7 @@ public class ShoppingCart {
         public int getQtyInShoppingCart() {
             return qtyInShoppingCart;
         }
+        public void addQtyInShoppingCart(int amount) { this.qtyInShoppingCart += amount;}
+        public void removeQtyInShoppingCart(int amount){ this.qtyInShoppingCart -= amount;}
     }
 }
