@@ -9,6 +9,9 @@ import java.util.Iterator;
 /**
  * Created by Teddy on 2016-10-04.
  */
+/**
+ *  LookOrders will convert a list of orders or an order, ArrayList with items, to a viewable table for the user.
+ * */
 public class LookOrders {
     public Hashtable getAllOrders()
     {

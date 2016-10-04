@@ -9,6 +9,10 @@ import java.util.Iterator;
 /**
  * Created by Teddy on 2016-09-28.
  */
+/***
+ * LookItems converts a list, ArrayList containing items, to a readable table for viewpart(JSP:n) and therefore be viewable to a user.
+ *
+ * */
 public class LookItems {
     //konverterar till en läsbartabell för JSP
 

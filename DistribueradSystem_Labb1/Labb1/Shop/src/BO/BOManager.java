@@ -9,10 +9,15 @@ import java.util.Hashtable;
 /**
  * Created by Teddy on 2016-09-28.
  */
+
+/**
+ * Bomanager takes care of the the different functionalties a user can do and also provides the user with resources.
+ * **/
 public class BOManager {
 
     public BOManager()
     {
+
     }
 
     public static void init()

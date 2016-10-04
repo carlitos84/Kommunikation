@@ -9,6 +9,7 @@ import java.util.Iterator;
 /**
  * Created by Teddy on 2016-09-28.
  */
+
 public class Order {
     private int size;
     private String username;
