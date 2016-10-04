@@ -10,6 +10,7 @@
 <tr>
     <div><%@include file="login.jsp"%></div>
     <div><%@include file="work_staff.jsp"%></div>
+    <div><%@include file="staff_showorder.jsp"%></div>
 </tr>
 <table>
 </table>

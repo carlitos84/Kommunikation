@@ -67,7 +67,24 @@ public class BOManager {
         }
         return DBManager.makeOrder(orderList);
     }
+    //staff member only:
+    public static Hashtable getAllOrders()
+    {
+        LookOrders look = new LookOrders();
+        return look.getAllOrders();
+    }
 
+    public static Hashtable getItemsInOrderByOrderId(int orderId)
+    {
+        LookOrders look = new LookOrders();
+        return look.getOrderByOrderId(orderId);
+    }
+
+    public static int packetOrderByStaffWithOrderId(int orderId, String username, String password)
+    {
+
+        return DBManager.packetOrderByStaff(orderId, username, password);
+    }
 
 
 }

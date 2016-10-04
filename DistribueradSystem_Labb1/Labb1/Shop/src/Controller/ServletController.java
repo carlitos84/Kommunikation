@@ -3,6 +3,8 @@ package Controller;
 import BO.BOManager;
 import BO.Item;
 import BO.LookItems;
+import DB.DBItem;
+import DB.DBManager;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +27,9 @@ public class ServletController extends HttpServlet {
     User user ;
     boolean validation;
     int resultsize;
+    int ordersize;
+    int allorderssize;
+    int staffworkingorderid;
     @Override
     public void init(ServletConfig config) throws ServletException
     {
@@ -35,7 +40,9 @@ public class ServletController extends HttpServlet {
         user = new User();
         validation = false;
         resultsize = 0;
-
+        ordersize = 0;
+        allorderssize = 0;
+        staffworkingorderid = 0;
     }
 
     @Override
@@ -164,9 +171,64 @@ public class ServletController extends HttpServlet {
             session.setAttribute("resulttable", table);
         }
 
+        //staff work:
+        System.out.println("user is staff =" + user.isStaff());
+        if(user.isStaff())
+        {
+            String showallorders = request.getParameter("showallorders");
+            String packetorder = request.getParameter("packetorder");
 
+            if(showallorders != null)
+            {
+                System.out.println(" in showallordersButton");
+                Hashtable allOrders = BOManager.getAllOrders();
+                System.out.println("allorders table size: " + allOrders.size());
+                request.getSession().setAttribute("orderlist", allOrders);
+                allorderssize = allOrders.size();
+                request.getSession().setAttribute("allorderlistsize", allorderssize);
+            }
+
+            System.out.println("allorderssize: " + allorderssize);
+            for (int i=0; i<allorderssize;i++)
+            {
+                String showbutton = request.getParameter("showorderbutton"+i);
+                if(showbutton != null)
+                {
+                    String idfillednumber = request.getParameter("idfillednumber"+i);
+                    staffworkingorderid = Integer.parseInt(idfillednumber);
+                    Hashtable order = BOManager.getItemsInOrderByOrderId(staffworkingorderid);
+                    request.getSession().setAttribute("ordersize", order.size());
+                    request.getSession().setAttribute("showorder",order);
+                    request.getSession().setAttribute("ordertotalprice",order.get("totalprice"));
+                }
+            }
+
+            if(packetorder!=null)
+            {
+
+                int result = BOManager.packetOrderByStaffWithOrderId(staffworkingorderid, user.getUsername(), user.getPassword());
+                System.out.println(result);
+                if(result==200)
+                {
+                    ordersize = 0;
+                    request.getSession().setAttribute("ordersize", ordersize);
+                    Hashtable allOrders = BOManager.getAllOrders();
+                    request.getSession().setAttribute("orderlist", allOrders);
+                    allorderssize = allOrders.size();
+                    request.getSession().setAttribute("allorderlistsize", allorderssize);
+                }
+            }
+
+            request.getRequestDispatcher("/WEB-INF/index_staff.jsp").forward(request, response);
+        }
+
+        request.getSession().setAttribute("allorderlistsize", allorderssize);
         request.getSession().setAttribute("totalprice",cart.getTotalPrice());
-        request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+        if(user.isCustomer())
+        {
+            request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+        }
+
         System.out.println("************end doPost*********");
     }
 
@@ -178,7 +240,10 @@ public class ServletController extends HttpServlet {
         request.getSession().setAttribute("shoppingcartsize", cart.getSize());
         request.getSession().setAttribute("shoppingcarttable", cart.lookCart());
         request.getSession().setAttribute("totalprice", cart.getTotalPrice());
+        request.getSession().setAttribute("allorderlistsize", allorderssize);
+        request.getSession().setAttribute("allorderlistsize", allorderssize);
         System.out.println("total price: " + cart.getTotalPrice());
+        request.getSession().setAttribute("ordersize", ordersize);
         request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
     }
 }

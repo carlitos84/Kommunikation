@@ -94,6 +94,8 @@ public class DBManager {
         return 100;
     }
 
+
+
     private static int checkStockStatus(int itemId, int amount)
     {
         try {
@@ -124,5 +126,53 @@ public class DBManager {
             e.printStackTrace();
         }
         return rs;
+    }
+
+    //staff member:
+    public static ResultSet getOrdersByQuery(String query)
+    {
+        ResultSet rs = null;
+        try{
+            Statement st = con.createStatement();
+            rs = st.executeQuery(query);
+
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return rs;
+    }
+
+    public static int packetOrderByStaff(int orderId, String username, String password)
+    {
+        User user = DBCustomer.getUser(username,password);
+
+        if(user == null || !user.isStaff())
+        {
+            return 100;
+        }
+
+        try {
+            Connection con = getCon();
+            Statement st = con.createStatement();
+
+            st.execute("START TRANSACTION;");
+            st.execute("DELETE FROM T_OrderItems WHERE K_OrderId = " + orderId);
+            st.execute("DELETE FROM T_Order     WHERE K_Id = " + orderId);
+            st.execute("COMMIT;");
+            return 200;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                Statement statement = con.createStatement();
+                statement.execute("ROLLBACK ;");
+                System.out.println("Rollback");
+                return 100;
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return 100;
     }
 }

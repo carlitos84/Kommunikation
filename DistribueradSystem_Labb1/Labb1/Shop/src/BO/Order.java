@@ -1,5 +1,7 @@
 package BO;
 
+import DB.DBOrder;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -36,6 +38,7 @@ public class Order {
         size = 0;
     }
 
+
     public int getSize()
     {
         return size;
@@ -56,14 +59,48 @@ public class Order {
         size = orderList.size();
     }
 
+    //staff:
+    public void addItem(int itemId,int amount, int customerId, int orderId)
+    {
+        orderList.add(new ItemDTO(itemId, amount, customerId, orderId));
+        size = orderList.size();
+    }
+
+    public static ArrayList<int[]> getAllOrders()
+    {
+        return DBOrder.getAllOrders();
+    }
+    public static Order getAllItemsInOrder(int orderId)
+    {
+        return DBOrder.getItemInOrderByOrderId(orderId);
+    }
+
+    public int getCustomerIdFrom(int index)
+    {
+        return orderList.get(index).customerId;
+    }
+    public int getOrderIdFrom(int index)
+    {
+        return orderList.get(index).orderId;
+    }
+
     private class ItemDTO{
         private int itemId;
         private int amount;
-
+        private int customerId;
+        private int orderId;
         public ItemDTO(int itemId,int amount)
         {
             this.itemId = itemId;
             this.amount =amount ;
+        }
+
+        public ItemDTO(int itemId,int amount, int CustomerId, int OrderId)
+        {
+            this.itemId = itemId;
+            this.amount =amount ;
+            this.customerId = customerId;
+            this.orderId = orderId;
         }
     }
 
