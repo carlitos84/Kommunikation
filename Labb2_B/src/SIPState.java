@@ -10,7 +10,7 @@ public abstract class SIPState {
 
     public SIPState invitedSendingTro(PrintWriter out, Socket clientSocket, String message){return this;}
     public SIPState receivedAck(){return this;}
-    public SIPState sendingInvite(String arguments){return this;}
+    public SIPState sendingInvite(Socket clientSocket, String arguments){return this;}
     public SIPState receivedTroSendingAck(String message){return this;}
     public SIPState receivedByeSendingOk(){return this;}
     public SIPState sendingBye(){return this;}

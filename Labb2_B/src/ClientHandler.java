@@ -13,26 +13,17 @@ public class ClientHandler implements Runnable{
     private SIPController controller;
     private boolean running;
 
-    public ClientHandler(Socket clientSocket)
+    public ClientHandler(Socket clientSocket, SIPController controller)
     {
         this.clientSocket = clientSocket;
-        controller = new SIPController(clientSocket);
+        this.controller = controller;
         running =true;
     }
 
     @Override
     public void run() {
-
         Thread t = new Thread(new MessageReceiver(clientSocket, controller));
         t.run();
-
-        //write to others
-        Scanner scan = new Scanner(System.in);
-        while(running)
-        {
-            String messageToSend = scan.nextLine();
-            controller.processNextEventOutGoing(messageToSend);
-        }
     }
 
     private class MessageReceiver implements Runnable

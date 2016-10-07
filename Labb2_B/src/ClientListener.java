@@ -2,16 +2,17 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 /**
  * Created by Teddy on 2016-10-07.
  */
 public class ClientListener implements Runnable{
 
-    private static boolean busy = false;
+    private static Boolean busy = false;
     private ServerSocket serverSocket;
     private boolean running;
-    private static InetAddress myIP = null;
+    private SIPController controller;
 
 
     public ClientListener(int port)
@@ -19,7 +20,7 @@ public class ClientListener implements Runnable{
         try {
             serverSocket = new ServerSocket(port);
             running = true;
-            myIP = serverSocket.getInetAddress();
+            controller = new SIPController(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,6 +29,8 @@ public class ClientListener implements Runnable{
 
     @Override
     public void run() {
+        Thread t = new Thread(new MessageSender());
+        t.run();
 
         while(running)
         {
@@ -41,8 +44,13 @@ public class ClientListener implements Runnable{
                 }
                 else
                 {
-                    Thread t = new Thread(new ClientHandler(clientSocket));
-                    t.run();
+                    synchronized (this.controller)
+                    {
+                        this.controller = new SIPController(clientSocket);
+                    }
+                    this.busy = true;
+                    Thread clientHandlerThread = new Thread(new ClientHandler(clientSocket, controller));
+                    clientHandlerThread.run();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -53,10 +61,31 @@ public class ClientListener implements Runnable{
 
     public static boolean isBusy()
     {
-        return busy;
+        synchronized (busy) {
+            return busy;
+        }
     }
 
-    public static InetAddress getMyIP(){
-        return myIP;
+    public static void setBusy(){
+        synchronized (busy)
+        {
+            busy = true;
+        }
     }
+
+    private class MessageSender implements Runnable{
+
+        @Override
+        public void run() {
+            //write to others
+            Scanner scan = new Scanner(System.in);
+            while(running)
+            {
+                String messageToSend = scan.nextLine();
+                System.out.println("sending: " + messageToSend);
+                controller.processNextEventOutGoing(messageToSend);
+            }
+        }
+    }
+
 }

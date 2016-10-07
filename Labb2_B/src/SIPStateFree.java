@@ -14,7 +14,7 @@ public class SIPStateFree extends SIPState {
         ;
     }
 
-    public SIPState sendingInvite(String arguments)
+    public SIPState sendingInvite(Socket clientSocket, String arguments)
     {
         String[] argument = getArguments(arguments);
         if(argument.length != 3)
@@ -33,8 +33,6 @@ public class SIPStateFree extends SIPState {
                 int myAudioPort = myAudioSocket.getLocalPort();
                 System.out.println("creating myAudioport: " + myAudioPort);
                 //sending client my audio port
-                Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
-
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 out.println("INVITE " + myAudioPort);
                 return new SIPStateInviting(clientSocket, myAudioSocket);

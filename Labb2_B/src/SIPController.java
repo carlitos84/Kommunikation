@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Created by Teddy on 2016-09-27.
@@ -62,7 +64,22 @@ public class SIPController {
         {
             case INVITE:
                 System.out.println("Sending INVITE");
-                currentState = currentState.sendingInvite(message);
+                if(clientSocket == null)
+                {
+                    String[] argument = getArguments(message);
+                    InetAddress clientIP = null;
+                    try {
+                        clientIP = InetAddress.getByName(argument[1]);
+                        Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
+                        this.clientSocket = clientSocket;
+                        ClientListener.setBusy();
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                currentState = currentState.sendingInvite(clientSocket, message);
                 break;
             case BYE:
                 System.out.println("Sending BYE");
@@ -91,5 +108,11 @@ public class SIPController {
         }
         System.out.println("In commanHandlerInGoing: " + command);
         return SIPEvent.DEFAULT;
+    }
+
+    private String[] getArguments(String message)
+    {
+        String[] argument = message.split(" ");
+        return argument;
     }
 }
