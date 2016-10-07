@@ -16,15 +16,21 @@ public class SIPController {
     public SIPController(Socket clientSocket)
     {
         this.clientSocket = clientSocket;
+
         this.out = null;
+        this.out = null;
+        this.currentState = new SIPStateFree();
+    }
+
+    public void init(Socket clientSocket)
+    {
+        this.clientSocket = clientSocket;
         try {
             this.out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.currentState = new SIPStateFree();
     }
-
 
     public void processNextEventInGoing(String message)
     {
@@ -71,7 +77,8 @@ public class SIPController {
                     try {
                         clientIP = InetAddress.getByName(argument[1]);
                         Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
-                        this.clientSocket = clientSocket;
+                        //initiate, gives valur to clientSocket and PrintWriter out.
+                        init(clientSocket);
                         ClientListener.setBusy();
                     } catch (UnknownHostException e) {
                         e.printStackTrace();

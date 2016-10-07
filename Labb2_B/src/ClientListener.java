@@ -46,7 +46,7 @@ public class ClientListener implements Runnable{
                 {
                     synchronized (this.controller)
                     {
-                        this.controller = new SIPController(clientSocket);
+                        this.controller.init(clientSocket);
                     }
                     this.busy = true;
                     Thread clientHandlerThread = new Thread(new ClientHandler(clientSocket, controller));
