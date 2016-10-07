@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
@@ -26,6 +28,8 @@ public class SIPStateInviting extends SIPState {
                 myAudiosocket.connectTo(clientSocket.getInetAddress(), remoteAudioPort);
                 myAudiosocket.startStreaming();
                 System.out.println("Got TRO and in INVITING - sending ACK - starting audio stream");
+                PrintWriter out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
+                out.println("ACK");
                 return new SIPStateInSession(clientSocket, myAudiosocket);
             }
 

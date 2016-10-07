@@ -23,7 +23,7 @@ public class ClientHandler implements Runnable{
     @Override
     public void run() {
         Thread t = new Thread(new MessageReceiver(clientSocket, controller));
-        t.run();
+        t.start();
     }
 
     private class MessageReceiver implements Runnable

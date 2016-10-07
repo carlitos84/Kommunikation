@@ -25,9 +25,7 @@ public class SIPStateFree extends SIPState {
         {
             try {
                 InetAddress clientIP = InetAddress.getByName(argument[1]);
-                System.out.println("argument[0]: " + argument[0]);
-                System.out.println("argument[1]: " + argument[1]);
-                System.out.println("argument[1]: " + argument[2]);
+
                 //making my audio port
                 AudioStreamUDP myAudioSocket = new AudioStreamUDP();
                 int myAudioPort = myAudioSocket.getLocalPort();

@@ -30,8 +30,9 @@ public class ClientListener implements Runnable{
     @Override
     public void run() {
         Thread t = new Thread(new MessageSender());
-        t.run();
-
+        System.out.println("before t.run");
+        t.start();
+        System.out.println("before while-loop");
         while(running)
         {
             try {
@@ -73,17 +74,19 @@ public class ClientListener implements Runnable{
         }
     }
 
-    private class MessageSender implements Runnable{
+    public class MessageSender implements Runnable{
 
         @Override
         public void run() {
             //write to others
             Scanner scan = new Scanner(System.in);
-            while(running)
+            while(true)
             {
+                System.out.println("while");
                 String messageToSend = scan.nextLine();
                 System.out.println("sending: " + messageToSend);
                 controller.processNextEventOutGoing(messageToSend);
+                System.out.println("aftrer controller");
             }
         }
     }

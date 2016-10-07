@@ -27,6 +27,8 @@ public class SIPController {
         this.clientSocket = clientSocket;
         try {
             this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+            System.out.println("clientSockets IP: " + clientSocket.getInetAddress());
+            out.println("TEST");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,9 +78,12 @@ public class SIPController {
                     InetAddress clientIP = null;
                     try {
                         clientIP = InetAddress.getByName(argument[1]);
+                        //InetAddress cIP = InetAddress.getByName("130.229.189.248");
                         Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
                         //initiate, gives valur to clientSocket and PrintWriter out.
                         init(clientSocket);
+                        Thread thread =  new Thread(new ClientHandler(clientSocket, this));
+                        thread.start();
                         ClientListener.setBusy();
                     } catch (UnknownHostException e) {
                         e.printStackTrace();
