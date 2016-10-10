@@ -1,4 +1,3 @@
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -11,7 +10,7 @@ import java.net.UnknownHostException;
 public class SIPStateFree extends SIPState {
     public SIPStateFree()
     {
-        ;
+        showState();
     }
 
     public SIPState sendingInvite(Socket clientSocket, String arguments)
@@ -37,23 +36,24 @@ public class SIPStateFree extends SIPState {
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }catch (Exception e)
             {
                 throw e;
             }
         }
-        return  error(clientSocket);
+        return  errorState(clientSocket, null);
     }
 
     public SIPState invitedSendingTro(PrintWriter out, Socket clientSocket, String receivedMessage)
     {
-        String[] arguments = getArguments(receivedMessage);
-        //getting clientAudio port:
-        int clientAudioPort = Integer.parseInt(arguments[1]);
-        System.out.println("clienntAudioPort: " + clientAudioPort);
-
+        System.out.println("before try in invitedSendingTro");
         try {
+            String[] arguments = getArguments(receivedMessage);
+            //getting clientAudio port:
+            int clientAudioPort = Integer.parseInt(arguments[1]);
+            System.out.println("clienntAudioPort: " + clientAudioPort);
+
             //make own audio port
             AudioStreamUDP myAudioSocket = new AudioStreamUDP();
             int localAudioPort = myAudioSocket.getLocalPort();
@@ -62,9 +62,9 @@ public class SIPStateFree extends SIPState {
             out.println("TRO " + localAudioPort);
 
             return new SIPStateInvited(clientSocket, myAudioSocket, clientAudioPort);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return  error(clientSocket);
+        return  errorState(clientSocket, null);
     }
 }

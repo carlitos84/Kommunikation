@@ -12,6 +12,7 @@ public class SIPStateInviting extends SIPState {
 
     public SIPStateInviting(Socket clientSocket, AudioStreamUDP myAudiosocket)
     {
+        showState();
         this.clientSocket = clientSocket;
         this.myAudiosocket = myAudiosocket;
     }
@@ -36,6 +37,8 @@ public class SIPStateInviting extends SIPState {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  error(clientSocket);
+        finally {
+            return  errorState(clientSocket, myAudiosocket);
+        }
     }
 }

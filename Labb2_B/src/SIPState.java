@@ -15,20 +15,33 @@ public abstract class SIPState {
     public SIPState receivedByeSendingOk(){return this;}
     public SIPState sendingBye(){return this;}
     public SIPState receivedOk(){return this;}
-    public SIPState error(Socket clientsocket){
+    public SIPState errorState(Socket clientsocket, AudioStreamUDP audioStreamUDP){
         try {
+            System.out.println("in errorState: closing socket...");
             clientsocket.close();
+            //clientsocket = null;
             ClientListener.setBusy(false);
-
+            ClientListener.setClientInProgress(true);
+            if (audioStreamUDP != null)
+            {
+                audioStreamUDP.stopStreaming();
+                audioStreamUDP.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SIPStateFree();}
+        return new SIPStateFree();
+    }
     public void printState(){;}
 
     protected String[] getArguments(String message)
     {
         String[] argument = message.split(" ");
         return argument;
+    }
+
+    protected void showState()
+    {
+        System.out.println("currentState: " + this.toString());
     }
 }

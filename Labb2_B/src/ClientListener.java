@@ -16,6 +16,7 @@ public class ClientListener implements Runnable{
     private boolean running;
     private SIPController controller;
     private final Object lock = new Object();
+    private static Boolean needToReset =  false;
 
     public ClientListener(int port)
     {
@@ -31,21 +32,27 @@ public class ClientListener implements Runnable{
 
     @Override
     public void run() {
-        Thread t = new Thread(new MessageSender());
-        System.out.println("before t.run");
-        t.start();
-        System.out.println("before while-loop");
         while(running)
         {
-            try {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Socket accepted");
-                System.out.println("isBusy: " + isBusy());
-                if(isBusy())
-                {
-                    System.out.println("is BUSY");
-                    PrintWriter out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
-                    out.println("BUSY");
+            Thread t = new Thread(new MessageSender());
+            System.out.println("before t.run");
+            t.start();
+            this.setClientInProgress(false);
+            Thread clientHandlerThread = null;
+            System.out.println("before while-loop");
+            System.out.println("before accept socket!****");
+            Socket clientSocket = null;
+            System.out.println("before while-loop");
+            while(!needToReset)
+            {
+                try {
+                    clientSocket = serverSocket.accept();
+                    System.out.println("Socket accepted");
+                    if(isBusy())
+                    {
+                        System.out.println("is BUSY");
+                        PrintWriter out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
+                        out.println("BUSY");
 
                         synchronized (lock)
                         {
@@ -54,26 +61,42 @@ public class ClientListener implements Runnable{
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }finally {
+                                System.out.println("finally: closing socket...");
                                 clientSocket.close();
                             }
                         }
 
-                }
-                else
-                {
-                    synchronized (this.controller)
-                    {
-                        this.controller.init(clientSocket);
                     }
-                    this.busy = true;
-                    Thread clientHandlerThread = new Thread(new ClientHandler(clientSocket, controller));
-                    clientHandlerThread.run();
+                    else
+                    {
+                        synchronized (this.controller)
+                        {
+                            this.controller.init(clientSocket);
+                        }
+                        this.busy = true;
+                        clientHandlerThread = new Thread(new ClientHandler(clientSocket, controller));
+                        clientHandlerThread.run();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+                finally {
+                    try {
+                        if(clientHandlerThread != null)
+                        {
+                            clientHandlerThread.join();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-
         }
+    }
+
+    public static synchronized void setClientInProgress(boolean b)
+    {
+        needToReset = b;
     }
 
     public static boolean isBusy()

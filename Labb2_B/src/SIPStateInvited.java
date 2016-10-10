@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -12,6 +11,7 @@ public class SIPStateInvited extends SIPState {
 
     public SIPStateInvited(Socket clientSocket, AudioStreamUDP myAudiosocket, int clientAudioPort)
     {
+        showState();
         this.clientSocket = clientSocket;
         this.myAudiosocket = myAudiosocket;
         this.clientAudioPort = clientAudioPort;
@@ -26,7 +26,8 @@ public class SIPStateInvited extends SIPState {
             return new SIPStateInSession(clientSocket,myAudiosocket);
         } catch (IOException e) {
             e.printStackTrace();
+            return  errorState(clientSocket, myAudiosocket);
         }
-        return  error(clientSocket);
+
     }
 }

@@ -12,13 +12,13 @@ public class SIPController {
     private  SIPState currentState;
     private Socket clientSocket;
     private PrintWriter out;
+    private Thread clientHandler;
 
     public SIPController(Socket clientSocket)
     {
         this.clientSocket = clientSocket;
-
         this.out = null;
-        this.out = null;
+        this.clientHandler = null;
         this.currentState = new SIPStateFree();
     }
 
@@ -38,10 +38,11 @@ public class SIPController {
         SIPEvent event = commandHandlerEvent(message);
         System.out.println("message from client: " + message + " event: " + event.name());
         try{
+
             switch (event)
             {
                 case INVITE:
-                    System.out.println("in INVITE by client");
+                    System.out.println("in INVITE by client and msg is: " + message);
                     currentState = currentState.invitedSendingTro(out,clientSocket, message);
                     break;
                 case TRO:
@@ -58,9 +59,12 @@ public class SIPController {
                     currentState = currentState.receivedAck();
                     break;
                 default:
-                    System.out.println("in inGoing default!");
-                     currentState = currentState.error(clientSocket);
-                    //if connected, then disconnect
+                    System.out.println("in inGoing default!,");
+                    if(clientHandler != null)
+                    {
+                        this.clientHandler.join();
+                    }
+                    currentState = currentState.errorState(clientSocket, null);
             }
         } catch (Exception e) {
             System.out.println("EXCEPTION inGOing");
@@ -89,8 +93,8 @@ public class SIPController {
                             Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
                             //initiate, gives valur to clientSocket and PrintWriter out.
                             init(clientSocket);
-                            Thread thread =  new Thread(new ClientHandler(clientSocket, this));
-                            thread.start();
+                            clientHandler =  new Thread(new ClientHandler(clientSocket, this));
+                            clientHandler.start();
                             ClientListener.setBusy(true);
                         } catch (UnknownHostException e) {
                             e.printStackTrace();

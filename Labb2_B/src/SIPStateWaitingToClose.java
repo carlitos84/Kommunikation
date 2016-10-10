@@ -8,6 +8,7 @@ public class SIPStateWaitingToClose extends SIPState {
     private AudioStreamUDP myAudiosocket;
     public SIPStateWaitingToClose(Socket clientSocket, AudioStreamUDP myAudiosocket)
     {
+        showState();
         this.clientSocket = clientSocket;
         this.myAudiosocket = myAudiosocket;
     }
@@ -17,6 +18,6 @@ public class SIPStateWaitingToClose extends SIPState {
         myAudiosocket.stopStreaming();
         myAudiosocket.close();
         System.out.println("OK received now going to free state");
-        return  error(clientSocket);//
+        return  errorState(clientSocket, myAudiosocket);//
     }
 }

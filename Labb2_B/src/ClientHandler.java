@@ -57,6 +57,13 @@ public class ClientHandler implements Runnable{
 
             } catch (IOException e) {
                 System.out.println("Socket close, closing in progress");
+                ClientListener.setClientInProgress(false);
+                ClientListener.setBusy(false);
+                try {
+                    clientSocket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 //e.printStackTrace();
             }
 

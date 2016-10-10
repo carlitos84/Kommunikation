@@ -11,6 +11,7 @@ public class SIPStateInSession extends SIPState {
 
     public SIPStateInSession(Socket clientSocket, AudioStreamUDP audiosocket)
     {
+        showState();
         this.clientSocket = clientSocket;
         this.myAudiosocket = audiosocket;
     }
@@ -23,9 +24,10 @@ public class SIPStateInSession extends SIPState {
             return new SIPStateWaitingToClose(clientSocket, myAudiosocket);
         } catch (IOException e) {
             e.printStackTrace();
+            //errorhandler
+            return  errorState(clientSocket, myAudiosocket);
         }
-        //errorhandler
-        return  error(clientSocket);
+
     }
 
     public SIPState receivedByeSendingOk()
@@ -38,12 +40,10 @@ public class SIPStateInSession extends SIPState {
 
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             out.println("OK");
-
-            return new SIPStateFree();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+           return errorState(clientSocket, myAudiosocket);
         }
-        //error handler;
-        return  error(clientSocket);
     }
 }
