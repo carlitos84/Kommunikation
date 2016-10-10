@@ -28,7 +28,6 @@ public class SIPController {
         try {
             this.out = new PrintWriter(clientSocket.getOutputStream(), true);
             System.out.println("clientSockets IP: " + clientSocket.getInetAddress());
-            out.println("TEST");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,73 +37,87 @@ public class SIPController {
     {
         SIPEvent event = commandHandlerEvent(message);
         System.out.println("message from client: " + message + " event: " + event.name());
-        switch (event)
-        {
-            case INVITE:
-                System.out.println("in INVITE by client");
-                currentState = currentState.invitedSendingTro(out,clientSocket, message);
-                break;
-            case TRO:
-                System.out.println("REceiving TRO by client");
-                currentState = currentState.receivedTroSendingAck(message);
-                break;
-            case OK: currentState = currentState.receivedOk();
-                break;
-            case BYE:
-                System.out.println("Receiving BYE by client");
-                currentState = currentState.receivedByeSendingOk();
-                break;
-            case ACK:
-                currentState = currentState.receivedAck();
-                break;
-            default:
-                System.out.println("in inGoing default!");
-               // currentState = currentState.error(clientSocket);
-                //if connected, then disconnect
+        try{
+            switch (event)
+            {
+                case INVITE:
+                    System.out.println("in INVITE by client");
+                    currentState = currentState.invitedSendingTro(out,clientSocket, message);
+                    break;
+                case TRO:
+                    System.out.println("REceiving TRO by client");
+                    currentState = currentState.receivedTroSendingAck(message);
+                    break;
+                case OK: currentState = currentState.receivedOk();
+                    break;
+                case BYE:
+                    System.out.println("Receiving BYE by client");
+                    currentState = currentState.receivedByeSendingOk();
+                    break;
+                case ACK:
+                    currentState = currentState.receivedAck();
+                    break;
+                default:
+                    System.out.println("in inGoing default!");
+                     currentState = currentState.error(clientSocket);
+                    //if connected, then disconnect
+            }
+        } catch (Exception e) {
+            System.out.println("EXCEPTION inGOing");
+            e.printStackTrace();
         }
+
     }
 
     public  void processNextEventOutGoing(String message)
     {
         System.out.println("message: " + message);
         SIPEvent event = commandHandlerEvent(message);
-        switch (event)
-        {
-            case INVITE:
-                System.out.println("Sending INVITE");
-                if(clientSocket == null)
-                {
-                    String[] argument = getArguments(message);
-                    InetAddress clientIP = null;
-                    try {
-                        clientIP = InetAddress.getByName(argument[1]);
-                        //InetAddress cIP = InetAddress.getByName("130.229.189.248");
-                        Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
-                        //initiate, gives valur to clientSocket and PrintWriter out.
-                        init(clientSocket);
-                        Thread thread =  new Thread(new ClientHandler(clientSocket, this));
-                        thread.start();
-                        ClientListener.setBusy();
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+        try{
+            switch (event)
+            {
+                case INVITE:
+                    System.out.println("Sending INVITE");
+                    if(clientSocket == null)
+                    {
+                        String[] argument = getArguments(message);
+                        InetAddress clientIP = null;
+                        try {
+                            clientIP = InetAddress.getByName(argument[1]);
+                            //InetAddress cIP = InetAddress.getByName("130.229.189.248");
+                            Socket clientSocket = new Socket(clientIP, Integer.parseInt(argument[2]));
+                            //initiate, gives valur to clientSocket and PrintWriter out.
+                            init(clientSocket);
+                            Thread thread =  new Thread(new ClientHandler(clientSocket, this));
+                            thread.start();
+                            ClientListener.setBusy(true);
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                currentState = currentState.sendingInvite(clientSocket, message);
-                break;
-            case BYE:
-                System.out.println("Sending BYE");
-                currentState = currentState.sendingBye();
-                break;
-            case ACK:
-                System.out.println("Seding ACK");
-                currentState = currentState.receivedTroSendingAck(message);
-                break;
-            default:
-                System.out.println("in OutGoing deafult");
-                //errorhandler. if connected, then disconnect
+                    currentState = currentState.sendingInvite(clientSocket, message);
+                    break;
+                case BYE:
+                    System.out.println("Sending BYE");
+                    currentState = currentState.sendingBye();
+                    break;
+                case ACK:
+                    System.out.println("Seding ACK");
+                    currentState = currentState.receivedTroSendingAck(message);
+                    break;
+                default:
+                    System.out.println("in OutGoing deafult");
+                    //errorhandler. if connected, then disconnect
+            }
+        } catch (Exception e) {
+            System.out.println("EXCEPTION inGOing");
+            e.printStackTrace();
         }
+
+
     }
 
     private  SIPEvent commandHandlerEvent(String command)

@@ -38,9 +38,12 @@ public class SIPStateFree extends SIPState {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }catch (Exception e)
+            {
+                throw e;
             }
         }
-        return this;
+        return  error(clientSocket);
     }
 
     public SIPState invitedSendingTro(PrintWriter out, Socket clientSocket, String receivedMessage)
@@ -62,7 +65,6 @@ public class SIPStateFree extends SIPState {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Invitation recieved and sending TRO");
-        return this;
+        return  error(clientSocket);
     }
 }

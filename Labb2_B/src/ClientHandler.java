@@ -48,6 +48,7 @@ public class ClientHandler implements Runnable{
 
             try {
                 String message;
+
                 while ((message = reader.readLine()) != null)
                 {
                     System.out.println("message from client(in MessageReciever): " + message);
@@ -55,8 +56,10 @@ public class ClientHandler implements Runnable{
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Socket close, closing in progress");
+                //e.printStackTrace();
             }
+
         }
     }
 }

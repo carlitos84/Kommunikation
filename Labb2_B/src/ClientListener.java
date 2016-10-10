@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,7 +15,7 @@ public class ClientListener implements Runnable{
     private ServerSocket serverSocket;
     private boolean running;
     private SIPController controller;
-
+    private final Object lock = new Object();
 
     public ClientListener(int port)
     {
@@ -38,10 +40,24 @@ public class ClientListener implements Runnable{
             try {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Socket accepted");
+                System.out.println("isBusy: " + isBusy());
                 if(isBusy())
                 {
                     System.out.println("is BUSY");
-                    clientSocket.close();
+                    PrintWriter out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
+                    out.println("BUSY");
+
+                        synchronized (lock)
+                        {
+                            try{
+                                lock.wait(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }finally {
+                                clientSocket.close();
+                            }
+                        }
+
                 }
                 else
                 {
@@ -67,10 +83,10 @@ public class ClientListener implements Runnable{
         }
     }
 
-    public static void setBusy(){
+    public static void setBusy(boolean set){
         synchronized (busy)
         {
-            busy = true;
+            busy = set;
         }
     }
 

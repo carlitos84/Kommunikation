@@ -23,9 +23,10 @@ public class SIPStateInvited extends SIPState {
         try {
             myAudiosocket.connectTo(clientSocket.getInetAddress(), clientAudioPort);
             myAudiosocket.startStreaming();
+            return new SIPStateInSession(clientSocket,myAudiosocket);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SIPStateInSession(clientSocket,myAudiosocket);
+        return  error(clientSocket);
     }
 }

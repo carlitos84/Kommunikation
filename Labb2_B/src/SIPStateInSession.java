@@ -25,7 +25,7 @@ public class SIPStateInSession extends SIPState {
             e.printStackTrace();
         }
         //errorhandler
-        return this;
+        return  error(clientSocket);
     }
 
     public SIPState receivedByeSendingOk()
@@ -44,6 +44,6 @@ public class SIPStateInSession extends SIPState {
             e.printStackTrace();
         }
         //error handler;
-        return this;
+        return  error(clientSocket);
     }
 }

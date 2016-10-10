@@ -36,6 +36,6 @@ public class SIPStateInviting extends SIPState {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return this;
+        return  error(clientSocket);
     }
 }

@@ -17,6 +17,6 @@ public class SIPStateWaitingToClose extends SIPState {
         myAudiosocket.stopStreaming();
         myAudiosocket.close();
         System.out.println("OK received now going to free state");
-        return new SIPStateFree();
+        return  error(clientSocket);//
     }
 }
