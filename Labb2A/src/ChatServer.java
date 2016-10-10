@@ -52,8 +52,9 @@ public class ChatServer extends UnicastRemoteObject implements Chat {
             }
         } else {
             //Send message from client to all others
-            String message = getClient(n).nick +": " +msg;
+
             synchronized (clientList) {
+                String message = getClient(n).nick +": " +msg;
                 for (int i = 0; i < clientList.size(); i++) {
                     try {
                         if (!clientList.get(i).getNotifiable().equals(n)) {
@@ -85,9 +86,10 @@ public class ChatServer extends UnicastRemoteObject implements Chat {
     @Override
     public void deRegisterClient(Notifiable n) throws RemoteException {
         synchronized (clientList) {
-            for (Client c : clientList) {
-                if (c.getNotifiable().equals(n)) {
-                    clientList.remove(c);
+
+            for(int i = 0; i < clientList.size(); i++) {
+                if(clientList.get(i).getNotifiable().equals(n)) {
+                    clientList.remove(i);
                 }
             }
         }
