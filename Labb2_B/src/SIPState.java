@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -19,9 +18,9 @@ public abstract class SIPState {
         try {
             System.out.println("in errorState: closing socket...");
             clientsocket.close();
-            //clientsocket = null;
+            clientsocket = null;
             ClientListener.setBusy(false);
-            ClientListener.setClientInProgress(true);
+            ClientListener.setNeedToReset(true);
             if (audioStreamUDP != null)
             {
                 audioStreamUDP.stopStreaming();

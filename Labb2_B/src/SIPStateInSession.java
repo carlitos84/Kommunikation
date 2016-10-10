@@ -34,7 +34,6 @@ public class SIPStateInSession extends SIPState {
     {
         System.out.println(" Recieved BYE and sending OK");
         try {
-
             myAudiosocket.stopStreaming();
             myAudiosocket.close();
 
@@ -42,8 +41,8 @@ public class SIPStateInSession extends SIPState {
             out.println("OK");
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-           return errorState(clientSocket, myAudiosocket);
+            return errorState(clientSocket, myAudiosocket);
         }
+        return errorState(clientSocket, myAudiosocket);
     }
 }

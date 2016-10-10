@@ -83,8 +83,10 @@ public class SIPController {
             {
                 case INVITE:
                     System.out.println("Sending INVITE");
-                    if(clientSocket == null)
+
+                    if(clientSocket == null || clientSocket.isClosed())
                     {
+                        System.out.println("clientSocket is null");
                         String[] argument = getArguments(message);
                         InetAddress clientIP = null;
                         try {
@@ -102,7 +104,9 @@ public class SIPController {
                             e.printStackTrace();
                         }
                     }
+
                     currentState = currentState.sendingInvite(clientSocket, message);
+
                     break;
                 case BYE:
                     System.out.println("Sending BYE");

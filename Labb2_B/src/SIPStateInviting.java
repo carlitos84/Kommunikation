@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Created by Teddy on 2016-09-27.
@@ -12,6 +13,11 @@ public class SIPStateInviting extends SIPState {
 
     public SIPStateInviting(Socket clientSocket, AudioStreamUDP myAudiosocket)
     {
+        try {
+            System.out.println("clientTimeout: " + clientSocket.getSoTimeout());
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         showState();
         this.clientSocket = clientSocket;
         this.myAudiosocket = myAudiosocket;
@@ -20,7 +26,12 @@ public class SIPStateInviting extends SIPState {
     public SIPState receivedTroSendingAck(String message)
     {
         String[] argumets = getArguments(message);
-
+        try {
+            clientSocket.setSoTimeout(0);
+            System.out.println("timeout: " + clientSocket.getSoTimeout());
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
 
         try {
             if(argumets[1] != null)
@@ -36,9 +47,8 @@ public class SIPStateInviting extends SIPState {
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
             return  errorState(clientSocket, myAudiosocket);
         }
+        return  errorState(clientSocket, myAudiosocket);
     }
 }

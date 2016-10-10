@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
@@ -32,11 +33,17 @@ public class SIPStateFree extends SIPState {
                 //sending client my audio port
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 out.println("INVITE " + myAudioPort);
+                clientSocket.setSoTimeout(3000);
+                System.out.println("socket Timeout: " + clientSocket.getSoTimeout() );
                 return new SIPStateInviting(clientSocket, myAudioSocket);
-            } catch (UnknownHostException e) {
+            }catch (SocketTimeoutException e)
+            {
+                e.printStackTrace();
+            }
+            catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }catch (Exception e)
             {
                 throw e;

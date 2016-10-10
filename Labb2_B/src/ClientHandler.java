@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * Created by Teddy on 2016-10-07.
@@ -57,7 +56,7 @@ public class ClientHandler implements Runnable{
 
             } catch (IOException e) {
                 System.out.println("Socket close, closing in progress");
-                ClientListener.setClientInProgress(false);
+                ClientListener.setNeedToReset(false);
                 ClientListener.setBusy(false);
                 try {
                     clientSocket.close();

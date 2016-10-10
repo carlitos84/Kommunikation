@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -37,7 +36,7 @@ public class ClientListener implements Runnable{
             Thread t = new Thread(new MessageSender());
             System.out.println("before t.run");
             t.start();
-            this.setClientInProgress(false);
+            this.setNeedToReset(false);
             Thread clientHandlerThread = null;
             System.out.println("before while-loop");
             System.out.println("before accept socket!****");
@@ -94,7 +93,7 @@ public class ClientListener implements Runnable{
         }
     }
 
-    public static synchronized void setClientInProgress(boolean b)
+    public static synchronized void setNeedToReset(boolean b)
     {
         needToReset = b;
     }
@@ -129,5 +128,4 @@ public class ClientListener implements Runnable{
             }
         }
     }
-
 }
